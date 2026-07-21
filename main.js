@@ -1,7 +1,7 @@
 import * as T from "https://esm.sh/three@0.160.0";
 import {OrbitControls} from "https://esm.sh/three@0.160.0/examples/jsm/controls/OrbitControls.js";
-import {views} from "./data.js?v=12";
-import {build} from "./model.js?v=12";
+import {views} from "./data.js?v=13";
+import {build} from "./model.js?v=13";
 
 const host=document.querySelector("#canvas"),scene=new T.Scene();
 scene.background=new T.Color(0xdde4e8);scene.fog=new T.Fog(0xdde4e8,65,130);
