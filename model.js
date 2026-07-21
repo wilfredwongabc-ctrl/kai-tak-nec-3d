@@ -1,5 +1,5 @@
 import * as T from "https://esm.sh/three@0.160.0";
-import {S,W,D,walls,columns,zones,pits,routes,labels,doors,videoRoute} from "./data.js?v=14";
+import {S,W,D,walls,columns,zones,pits,routes,labels,doors,videoRoute} from "./data.js?v=15";
 
 export function build(scene,renderer){
   const p=x=>x/S;
@@ -28,7 +28,7 @@ export function build(scene,renderer){
   plan.position.set(PLAN_X+PLAN_W/2,.006,PLAN_Z+PLAN_D/2);
   plan.receiveShadow=true;
   L.plan.add(plan);
-  new T.TextureLoader().load("./assets/latest-plan.svg?v=14",tex=>{
+  new T.TextureLoader().load("./assets/latest-plan.svg?v=15",tex=>{
     tex.colorSpace=T.SRGBColorSpace;
     tex.anisotropy=renderer.capabilities.getMaxAnisotropy();
     planMat.map=tex;
@@ -142,6 +142,23 @@ export function build(scene,renderer){
     q.scale.set(5.4,1,1);q.position.set(p(a[1]),3.7,p(a[2]));
     L.label.add(q);
   });
+
+  const entranceArrow=new T.ArrowHelper(
+    new T.Vector3(1,0,0),
+    new T.Vector3(p(-28),.13,p(72)),
+    p(48),
+    0x0b91bd,
+    p(11),
+    p(7)
+  );
+  L.label.add(entranceArrow);
+  const entranceRing=new T.Mesh(
+    new T.TorusGeometry(p(13),.045,8,40),
+    new T.MeshBasicMaterial({color:0x0b91bd,depthTest:false})
+  );
+  entranceRing.rotation.x=Math.PI/2;
+  entranceRing.position.set(p(18),.10,p(72));
+  L.label.add(entranceRing);
 
   const pts=videoRoute.map(v=>new T.Vector3(p(v[0]),.08,p(v[1])));
   L.route.add(new T.Line(new T.BufferGeometry().setFromPoints(pts),new T.LineBasicMaterial({color:0x1597c5})));
