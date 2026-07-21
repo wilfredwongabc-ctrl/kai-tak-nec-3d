@@ -1,5 +1,5 @@
 import * as T from "https://esm.sh/three@0.160.0";
-import {S,W,D,walls,columns,zones,pits,routes,labels,doors,videoRoute} from "./data.js?v=15";
+import {S,W,D,walls,columns,zones,pits,routes,labels,doors,videoRoute} from "./data.js?v=16";
 
 export function build(scene,renderer){
   const p=x=>x/S;
@@ -28,7 +28,7 @@ export function build(scene,renderer){
   plan.position.set(PLAN_X+PLAN_W/2,.006,PLAN_Z+PLAN_D/2);
   plan.receiveShadow=true;
   L.plan.add(plan);
-  new T.TextureLoader().load("./assets/latest-plan.svg?v=15",tex=>{
+  new T.TextureLoader().load("./assets/latest-plan.svg?v=16",tex=>{
     tex.colorSpace=T.SRGBColorSpace;
     tex.anisotropy=renderer.capabilities.getMaxAnisotropy();
     planMat.map=tex;
@@ -99,13 +99,37 @@ export function build(scene,renderer){
     H.position.set(p(x),h,p(z));
     L.door.add(a,b,H);
   }
+
   function leaf(x,z,w,o,s=1,m="blue"){
     const q=new T.Mesh(new T.BoxGeometry(p(w),2.15,.04),m==="public"?M.public:(M[m]||M.blue));
     q.position.set(p(x),1.075,p(z));
     q.rotation.y=(o==="h"?0:Math.PI/2)+s*.38;
     L.door.add(q);
   }
+
+  function liftDoor(x,z,w,o){
+    frame(x,z,w,o);
+    const panelWidth=p(w)/2-.015;
+    let a,b;
+    if(o==="h"){
+      a=new T.Mesh(new T.BoxGeometry(panelWidth,2.15,.055),M.metal);
+      b=a.clone();
+      a.position.set(p(x-w/4),1.075,p(z));
+      b.position.set(p(x+w/4),1.075,p(z));
+    }else{
+      a=new T.Mesh(new T.BoxGeometry(.055,2.15,p(w)/2-.015),M.metal);
+      b=a.clone();
+      a.position.set(p(x),1.075,p(z-w/4));
+      b.position.set(p(x),1.075,p(z+w/4));
+    }
+    L.door.add(a,b);
+  }
+
   doors.forEach(a=>{
+    if(a[0]==="lift"){
+      liftDoor(a[1],a[2],a[3],a[4]);
+      return;
+    }
     const col=a[5]==="painted"?"painted":a[5];
     frame(a[1],a[2],a[3],a[4]);
     if(a[0]==="double"){
@@ -143,19 +167,9 @@ export function build(scene,renderer){
     L.label.add(q);
   });
 
-  const entranceArrow=new T.ArrowHelper(
-    new T.Vector3(1,0,0),
-    new T.Vector3(p(-28),.13,p(72)),
-    p(48),
-    0x0b91bd,
-    p(11),
-    p(7)
-  );
+  const entranceArrow=new T.ArrowHelper(new T.Vector3(1,0,0),new T.Vector3(p(-28),.13,p(72)),p(48),0x0b91bd,p(11),p(7));
   L.label.add(entranceArrow);
-  const entranceRing=new T.Mesh(
-    new T.TorusGeometry(p(13),.045,8,40),
-    new T.MeshBasicMaterial({color:0x0b91bd,depthTest:false})
-  );
+  const entranceRing=new T.Mesh(new T.TorusGeometry(p(13),.045,8,40),new T.MeshBasicMaterial({color:0x0b91bd,depthTest:false}));
   entranceRing.rotation.x=Math.PI/2;
   entranceRing.position.set(p(18),.10,p(72));
   L.label.add(entranceRing);
